@@ -28,6 +28,45 @@ jobs:
         run: |
           curl -X POST \
           -H 'Content-type: application/json' \
+          --data '{"text":"CI Pipeline succeeded for devops-webapp"}' \
+          ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Slack Failure Notification
+        if: failure()
+        run: |
+          curl -X POST \
+          -H 'Content-type: application/json' \
+          --data '{"text":"CI Pipeline failed for devops-webapp"}' \
+          ${{ secrets.SLACK_WEBHOOK_URL }}name: CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build
+        run: |
+          echo "Building DevOps Web App"
+          ls -la
+
+      - name: Test
+        run: |
+          test -f index.html
+          echo "Test passed"
+
+      - name: Slack Success Notification
+        if: success()
+        run: |
+          curl -X POST \
+          -H 'Content-type: application/json' \
           --data '{"text":"✅ CI Pipeline succeeded for devops-webapp"}' \
           ${{ secrets.SLACK_WEBHOOK_URL }}
 
